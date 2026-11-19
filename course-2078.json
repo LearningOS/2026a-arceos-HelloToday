@@ -2,8 +2,8 @@
   "schema": 1,
   "courseId": 2078,
   "repository": "LearningOS/2026a-arceos-HelloToday",
-  "commit": "635746395ead70c5f189e2d3023f3f3b451ec5ff",
-  "score": 100,
+  "commit": "3f61eaa6c9e1c01f2894821c8bc21ab1dbc2c7ba",
+  "score": 200,
   "totalScore": 600,
   "exercises": [
     {
@@ -16,8 +16,8 @@
     {
       "name": "ramfs_rename",
       "max": 100,
-      "score": 0,
-      "status": "fail",
+      "score": 100,
+      "status": "pass",
       "exitCode": 0
     },
     {
@@ -50,9 +50,9 @@
     }
   ],
   "student": "HelloToday",
-  "runId": "44127788136",
+  "runId": "44507262489",
   "runAttempt": "1",
   "upload": {
-    "status": "accepted"
+    "status": "pending"
   }
 }
