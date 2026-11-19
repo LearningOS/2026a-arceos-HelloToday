@@ -67,6 +67,39 @@ impl DirNode {
         children.remove(name);
         Ok(())
     }
+
+    ///在当前目录内重命名节点，参数必须是单个名字
+    pub fn rename_node(&self, src: &str, dst: &str) -> VfsResult {
+        if src.is_empty()
+            || dst.is_empty()
+            || src == "."
+            || src == ".."
+            || dst == "."
+            || dst == ".."
+            || src.contains('/')
+            || dst.contains('/')
+        {
+            return Err(VfsError::InvalidInput);
+        }
+
+        let mut children = self.children.write();
+
+        if !children.contains_key(src) {
+            return Err(VfsError::NotFound);
+        }
+
+        if src == dst {
+            return Ok(());
+        }
+
+        if children.contains_key(dst) {
+            return Err(VfsError::AlreadyExists);
+        }
+
+        let node = children.remove(src).ok_or(VfsError::NotFound)?;
+        children.insert(dst.into(), node);
+        Ok(())
+    }
 }
 
 impl VfsNodeOps for DirNode {
@@ -163,6 +196,30 @@ impl VfsNodeOps for DirNode {
         } else {
             self.remove_node(name)
         }
+    }
+
+    fn rename(&self, src_path: &str, dst_path: &str) -> VfsResult {
+        //路径以当前节点为起点，先去掉开头的斜杠
+        let src_path = src_path.trim_start_matches('/');
+        let dst_path = dst_path.trim_start_matches('/');
+
+        //分离父目录路径和最后的名字
+        let (src_parent, src_name) = src_path.rsplit_once('/').unwrap_or(("",src_path));
+        let (dst_parent, dst_name) = dst_path.rsplit_once('/').unwrap_or(("",dst_path));
+
+        if src_parent != dst_parent {
+            return Err(VfsError::Unsupported);
+        }
+
+        let current = self.this.upgrade().ok_or(VfsError::NotFound)?;
+        let parent = current.lookup(src_parent)?;
+
+        let dir = parent
+            .as_any()
+            .downcast_ref::<DirNode>()
+            .ok_or(VfsError::NotADirectory)?;
+
+        dir.rename_node(src_name, dst_name)
     }
 
     axfs_vfs::impl_vfs_dir_default! {}
