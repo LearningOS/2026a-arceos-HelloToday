@@ -2,7 +2,7 @@
   "schema": 1,
   "courseId": 2078,
   "repository": "LearningOS/2026a-arceos-HelloToday",
-  "commit": "38f88d6e91fc298ec702d5f2df414ada60c9709e",
+  "commit": "d62607bf61ce02de74db9c74d978ba45335c9536",
   "score": 500,
   "totalScore": 600,
   "exercises": [
@@ -45,14 +45,14 @@
       "name": "simple_hv",
       "max": 100,
       "score": 0,
-      "status": "fail",
-      "exitCode": 0
+      "status": "timeout",
+      "exitCode": 124
     }
   ],
   "student": "HelloToday",
-  "runId": "44918948266",
+  "runId": "45047976227",
   "runAttempt": "1",
   "upload": {
-    "status": "accepted"
+    "status": "pending"
   }
 }
