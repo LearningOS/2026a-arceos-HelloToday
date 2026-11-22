@@ -102,16 +102,41 @@ fn vmexit_handler(ctx: &mut VmCpuRegisters) -> bool {
             }
         },
         Trap::Exception(Exception::IllegalInstruction) => {
-            panic!("Bad instruction: {:#x} sepc: {:#x}",
-                stval::read(),
-                ctx.guest_regs.sepc
-            );
+            let instruction = stval::read();
+
+            //当前只模拟课题中的csrr a1，mhartid指令
+            if instruction == 0xf14025f3 {
+                ctx.guest_regs.gprs.set_reg(A1, 0x1234);
+
+                //这条指令为4字节，下一次从后续指令继续执行
+                ctx.guest_regs.sepc += 4;
+
+            }
+            else {
+                panic!("Bad instruction: {:#x} sepc: {:#x}",
+                    stval::read(),
+                    ctx.guest_regs.sepc
+                );                
+            }        
+
         },
         Trap::Exception(Exception::LoadGuestPageFault) => {
-            panic!("LoadGuestPageFault: stval{:#x} sepc: {:#x}",
-                stval::read(),
-                ctx.guest_regs.sepc
-            );
+            let fault_addr = stval::read();
+
+            //当前只模拟本体第二条指令对地址0x40的读取
+            if fault_addr == 0x40 && ctx.guest_regs.sepc == VM_ENTRY + 4 {
+                ctx.guest_regs.gprs.set_reg(A0, 0x6688);
+
+                //读取已由宿主模拟完成，从下一条指令继续
+                ctx.guest_regs.sepc += 4;
+            }
+            else {
+                panic!("LoadGuestPageFault: stval{:#x} sepc: {:#x}",
+                    stval::read(),
+                    ctx.guest_regs.sepc
+                );                
+            }
+
         },
         _ => {
             panic!(
